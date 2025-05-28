@@ -10,6 +10,7 @@ app.use(express.json());
 
 app.post('/webhook', async (req, res) => {
   const event = req.header('x-gitlab-event');
+  console.log("request body:", req.body);
   try {
     if (event === 'Merge Request Hook') {
       await handleMergeRequest(req.body);
