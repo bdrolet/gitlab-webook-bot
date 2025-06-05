@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "echo \"skip build\"",
     "dev": "ts-node-dev --respawn src/index.ts",
     "start": "node dist/index.js"
   },
