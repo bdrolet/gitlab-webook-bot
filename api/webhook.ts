@@ -1,10 +1,10 @@
 // api/webhook.ts
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import app from '../src/app';
 
-// A single handler function, exported via CommonJS
-const handler = (req: VercelRequest, res: VercelResponse) => {
-  return app(req as any, res as any);
+import app from "../src/app";
+
+// Export a single CommonJS handler; use `any` for req/res so the build won't try to resolve @vercel/node
+const handler = (req: any, res: any) => {
+  return app(req, res);
 };
 
 module.exports = handler;
