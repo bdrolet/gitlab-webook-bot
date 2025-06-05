@@ -1,7 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import app from '../src/app';
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
-  // Hand off to your Express app
-  app(req as any, res as any);
-}
+const handler = (req: VercelRequest, res: VercelResponse) => {
+  // delegate to your Express app
+  return app(req as any, res as any);
+};
+
+// *This* is what Vercel will invoke:
+module.exports = handler;
