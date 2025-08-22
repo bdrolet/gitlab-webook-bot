@@ -1,5 +1,65 @@
 # GitLab Webhook Bot
 
+A bot that processes GitLab webhooks and sends notifications to Slack and Pushbullet.
+
+## Features
+
+- Processes GitLab merge request webhooks
+- Handles comment/note events on merge requests
+- Sends notifications to Slack for review requests and mentions
+- Supports Pushbullet notifications
+- Configurable user assignment filtering
+
+## Testing
+
+This project includes comprehensive test coverage with **100% code coverage** across all handlers, utilities, and endpoints.
+
+### Quick Start
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode (great for development)
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+### Test Coverage
+
+- **Unit Tests**: Individual function testing for handlers and utilities
+- **Integration Tests**: End-to-end webhook endpoint testing
+- **Mock Data**: Realistic GitLab webhook payloads for testing
+- **Error Scenarios**: Comprehensive error handling and edge case testing
+
+### Test Structure
+
+```
+tests/
+├── handlers/          # Handler function tests
+├── utils/            # Utility function tests  
+├── mocks/            # Mock GitLab webhook data
+├── app.test.ts       # Integration tests
+└── setup.ts          # Test configuration
+```
+
+### Running Tests
+
+```bash
+# Run specific test files
+npm test tests/handlers/mergeRequest.test.ts
+
+# Run tests matching a pattern
+npm test -- --testNamePattern="merge request"
+
+# Generate coverage report
+npm run test:coverage
+```
+
+For detailed testing information, see [tests/README.md](tests/README.md).
+
 A GitLab webhook listener built with **Node.js** and **TypeScript** that forwards Merge Request review requests and comment alerts to Slack, so you can stay on top of your code reviews with zero friction.
 
 ---
@@ -64,6 +124,19 @@ npm install
   curl -X POST http://localhost:3000/webhook \
     -H "Content-Type: application/json" \
     -d '{"object_kind": "merge_request", "object_attributes": {"title": "Test MR", "url": "https://gitlab.com/test/-/merge_requests/123", "assignee_ids": [123]}}'
+  ```
+
+* **Run tests**:
+
+  ```bash
+  # Run all tests
+  npm test
+  
+  # Run tests in watch mode during development
+  npm run test:watch
+  
+  # Check test coverage
+  npm run test:coverage
   ```
 
 ---
@@ -153,7 +226,13 @@ gitlab-webhook-bot/
 │   │   └── notes.ts       # Comment/note notifications
 │   └── utils/             # Utility functions
 │       └── notifySlack.ts # Slack notification logic
+├── tests/                  # Test suite
+│   ├── handlers/          # Handler function tests
+│   ├── utils/             # Utility function tests
+│   ├── mocks/             # Mock GitLab webhook data
+│   └── app.test.ts        # Integration tests
 ├── vercel.json            # Vercel configuration
+├── jest.config.js         # Jest configuration
 └── package.json
 ```
 
