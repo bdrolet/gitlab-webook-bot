@@ -26,6 +26,11 @@ app.post('/webhook', async (req, res) => {
     } else {
       console.log('Unknown event type:', event || objectKind);
     }
+    
+    // DELIBERATELY BROKEN CODE - This will cause a syntax error
+    if (true {
+      console.log('This will break the build');
+    
     res.sendStatus(200);
   } catch (err) {
     console.error(err);
