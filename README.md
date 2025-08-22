@@ -1,16 +1,16 @@
-# GitLab Webhook Notifier
+# GitLab Webhook Bot
 
-A GitLab webhook listener built with **Node.js** and **TypeScript** that forwards Merge Request review requests and comment alerts to Slack (and optionally Pushbullet for Android), so you can stay on top of your code reviews with zero friction.
+A GitLab webhook listener built with **Node.js** and **TypeScript** that forwards Merge Request review requests and comment alerts to Slack, so you can stay on top of your code reviews with zero friction.
 
 ---
 
 ## Features
 
-* 🔍 **Review Requests**: Notifies you in Slack when you’re assigned to review a Merge Request.
-* 💬 **Comment Alerts**: Sends Slack notifications for replies or mentions on MR comments you’ve made.
-* 📲 **Optional Pushbullet**: Get notifications on your Pixel 8 (or any device running Pushbullet).
+* 🔍 **Review Requests**: Notifies you in Slack when you're assigned to review a Merge Request.
+* 💬 **Comment Alerts**: Sends Slack notifications for replies or mentions on MR comments you've made.
+* 📲 **Slack Integration**: Real-time notifications in your Slack workspace.
 * ⚙️ **Configurable** via environment variables.
-* 🚀 **Easy Deployment**: Supports Vercel, Render, Heroku, Google Cloud Run, and more.
+* 🚀 **Easy Deployment**: Deployed on Vercel with automatic scaling.
 
 ---
 
@@ -20,7 +20,7 @@ A GitLab webhook listener built with **Node.js** and **TypeScript** that forward
 * npm (or yarn)
 * A GitLab project with webhook permissions
 * A Slack workspace with rights to create an Incoming Webhook
-* (Optional) A [Pushbullet](https://www.pushbullet.com) account and Access Token
+* A Vercel account for deployment
 
 ---
 
@@ -44,8 +44,6 @@ npm install
    PORT=3000
    GITLAB_USER_ID=<Your GitLab numeric user ID>
    SLACK_WEBHOOK_URL=https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXX
-   # Optional Pushbullet settings:
-   PUSHBULLET_TOKEN=<Your Pushbullet Access Token>
    ```
 
 2. Ensure `.env` is in your `.gitignore`.
@@ -60,64 +58,134 @@ npm install
   npm run dev
   ```
 
-* **Expose locally with ngrok** (optional):
+* **Test locally**:
 
   ```bash
-  ngrok http 3000
+  curl -X POST http://localhost:3000/webhook \
+    -H "Content-Type: application/json" \
+    -d '{"object_kind": "merge_request", "object_attributes": {"title": "Test MR", "url": "https://gitlab.com/test/-/merge_requests/123", "assignee_ids": [123]}}'
   ```
-
-* **Configure GitLab Webhook**:
-
-  * **URL**: `https://<your-tunnel>.ngrok.io/webhook`
-  * **Triggers**: Merge Request events, Note events
 
 ---
 
 ## Deployment
 
-### Vercel
+### Vercel (Recommended)
 
-1. Push your project to GitHub.
-2. Import the repo in [Vercel](https://vercel.com).
-3. Set environment variables in the Vercel dashboard.
-4. Deploy; update your GitLab webhook URL to `https://<your-vercel-url>/api/webhook`.
+1. Install Vercel CLI:
+   ```bash
+   npm i -g vercel
+   ```
 
-### Render
+2. Deploy to Vercel:
+   ```bash
+   vercel --prod
+   ```
 
-1. Create a new **Web Service** in [Render](https://render.com).
-2. Connect to your GitHub repo.
-3. **Build Command**: `npm install && npm run build`
-4. **Start Command**: `node dist/index.js`
-5. Add your environment variables.
-6. Update the GitLab webhook URL to the Render service endpoint.
+3. Add environment variables:
+   ```bash
+   vercel env add SLACK_WEBHOOK_URL
+   vercel env add GITLAB_USER_ID
+   ```
 
-*(Other platforms follow similar steps—just configure build/start commands and env vars.)*
+4. Redeploy after adding environment variables:
+   ```bash
+   vercel --prod
+   ```
+
+5. Your webhook will be available at:
+   ```
+   https://gitlab-webhook-bot.vercel.app/webhook
+   ```
+
+---
+
+## GitLab Webhook Setup
+
+1. Go to your GitLab project → **Settings** → **Webhooks**
+2. Add new webhook with these settings:
+   - **URL**: `https://gitlab-webhook-bot.vercel.app/webhook`
+   - **Name**: `GitLab Webhook Bot - Notifications`
+   - **Description**: `Automatically sends Slack notifications for merge requests, comments, and other GitLab events. Monitors project activity and keeps the team informed in real-time.`
+   - **Trigger**: Select the events you want (Merge Request events, Note events, etc.)
+   - **SSL verification**: Enable (recommended)
+
+---
+
+## Testing
+
+### Test Slack Notifications
+
+Send a test webhook payload to verify Slack integration:
+
+```bash
+curl -X POST https://gitlab-webhook-bot.vercel.app/webhook \
+  -H "Content-Type: application/json" \
+  -d '{
+    "object_kind": "merge_request",
+    "object_attributes": {
+      "title": "Test MR for Slack",
+      "url": "https://gitlab.com/test/project/-/merge_requests/123",
+      "assignee_ids": [123]
+    }
+  }'
+```
+
+### Monitor Logs
+
+View deployment logs:
+```bash
+vercel logs https://gitlab-webhook-bot.vercel.app
+```
+
+---
+
+## Project Structure
+
+```
+gitlab-webhook-bot/
+├── api/                    # Vercel serverless functions
+│   └── webhook.ts         # Main webhook handler
+├── src/
+│   ├── app.ts             # Express app configuration
+│   ├── handlers/          # Event handlers
+│   │   ├── mergeRequest.ts # Merge request notifications
+│   │   └── notes.ts       # Comment/note notifications
+│   └── utils/             # Utility functions
+│       └── notifySlack.ts # Slack notification logic
+├── vercel.json            # Vercel configuration
+└── package.json
+```
+
+---
+
+## Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `SLACK_WEBHOOK_URL` | Your Slack incoming webhook URL | Yes |
+| `GITLAB_USER_ID` | Your GitLab numeric user ID | Yes |
+| `PORT` | Local development port (default: 3000) | No |
 
 ---
 
 ## Contributing
 
 1. Fork the repository and create your feature branch:
-
    ```bash
+   git checkout -b feature/YourFeatureName
    ```
 
-git checkout -b feature/YourFeatureName
-
-````
 2. Commit your changes:
    ```bash
-git commit -m "Add feature or fix"
-````
-
-3. Push to your fork:
-
-   ```bash
+   git commit -m "Add feature or fix"
    ```
 
-git push origin feature/YourFeatureName
+3. Push to your fork:
+   ```bash
+   git push origin feature/YourFeatureName
+   ```
 
-```
 4. Open a Pull Request.
 
 ---
