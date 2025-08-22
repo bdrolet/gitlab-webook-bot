@@ -1,14 +1,15 @@
 # GitLab Webhook Bot
 
-A bot that processes GitLab webhooks and sends notifications to Slack and Pushbullet.
+A GitLab webhook listener in Node.js + TypeScript that routes MR review requests and comment alerts to Slack (and optionally Pushbullet), letting you stay on top of your code reviews with zero friction.
 
 ## Features
 
-- Processes GitLab merge request webhooks
-- Handles comment/note events on merge requests
-- Sends notifications to Slack for review requests and mentions
-- Supports Pushbullet notifications
-- Configurable user assignment filtering
+- **GitLab Webhook Integration**: Listens for merge request and comment events
+- **Slack Notifications**: Sends alerts to Slack channels
+- **Pushbullet Support**: Optional mobile notifications via Pushbullet
+- **TypeScript**: Full type safety and modern JavaScript features
+- **Automated Testing**: GitHub Actions runs tests on every commit
+- **Automated Deployment**: Vercel deployment via GitHub Actions when tests pass
 
 ## Testing
 
