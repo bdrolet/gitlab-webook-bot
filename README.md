@@ -10,6 +10,7 @@ A GitLab webhook listener in Node.js + TypeScript that routes MR review requests
 - **TypeScript**: Full type safety and modern JavaScript features
 - **Automated Testing**: GitHub Actions runs tests on every commit
 - **Automated Deployment**: Vercel deployment via GitHub Actions when tests pass
+- **Test**: Checking if Vercel auto-deploys
 
 ## Testing
 
